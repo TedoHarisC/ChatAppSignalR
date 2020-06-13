@@ -5,7 +5,7 @@
 <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
 <script src="~/signalr/hubs"></script>
 
-<h2>Chat</h2>
+<h2>Chat </h2><div>(Group Member : <small id="count" style="color: black;"></small>)</div> 
 <div class="container">
     <input type="text" id="message" />
     <input type="button" id="sendmessage" value="Send" />
@@ -26,6 +26,10 @@
         $("#discussion").append('<li style="color: green;">' + name + ' joined the group </li>');
     };
 
+    conn.client.showGroupUser = function (group_user) {
+        $("#count").html(group_user);
+    }
+
 
     //Menampilkan prompt untuk menanyakan nama
     $("#displayname").val(prompt("Enter your name : ", ""));
@@ -34,6 +38,7 @@
     //Melakukan eksekusi ketika hub siap
     $.connection.hub.start().done(function () {
         conn.server.joinGroup($("#displayname").val());
+        conn.invoke('count');
 
         $("#sendmessage").click(function () {
             conn.server.send($("#displayname").val(), $("#message").val());

@@ -8,6 +8,8 @@ namespace SignalRChat.Hubs
 {
     public class ChatHub : Hub
     {
+        public static int group_user = 0;
+
         public void Send(string name, string message)
         {
             Clients.All.addMessageToPage(name, message);
@@ -16,6 +18,12 @@ namespace SignalRChat.Hubs
         public void JoinGroup(string name)
         {
             Clients.All.addMessageJoin(name);
+        }
+
+        public void Count()
+        {
+            group_user += 1;
+            Clients.All.showGroupUser(group_user);
         }
     }
 }
