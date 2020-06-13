@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "Chat";
+}
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+<script src="~/signalr/hubs"></script>
+
+<h2>Chat</h2>
+<div class="container">
+    <input type="text" id="message" />
+    <input type="button" id="sendmessage" value="Send" />
+    <input type="hidden" id="displayname" />
+    <ul id="discussion"></ul>
+</div>  
+
+<script type="text/javascript">
+    //Menentukan koneksi
+    var conn = $.connection.chatHub;
+
+    //Menentukan apa yang akan terjadi pada client side ketika fungsi pada hub dipanggil
+    conn.client.addMessageToPage = function (name, message) {
+        $("#discussion").append('<li><strong>' + name + '</strong> : ' + message + '</li>');
+    };
+
+    conn.client.addMessageJoin = function (name) {
+        $("#discussion").append('<li style="color: green;">' + name + ' joined the group </li>');
+    };
+
+
+    //Menampilkan prompt untuk menanyakan nama
+    $("#displayname").val(prompt("Enter your name : ", ""));
+    $("#message").focus();
+
+    //Melakukan eksekusi ketika hub siap
+    $.connection.hub.start().done(function () {
+        conn.server.joinGroup($("#displayname").val());
+
+        $("#sendmessage").click(function () {
+            conn.server.send($("#displayname").val(), $("#message").val());
+            $("#message").val('').focus();
+        });
+    });
+</script>
+
